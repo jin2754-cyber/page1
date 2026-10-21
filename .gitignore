@@ -1,0 +1,6 @@
+*.csv
+*.ipynb
+*.xlsx
+*.joblib
+.env
+.env.*

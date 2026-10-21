@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>귀화 기록 분류 데모</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, "Malgun Gothic", sans-serif; color: #172033; background: #f4f7fb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 16px; }
+    main { max-width: 780px; margin: auto; }
+    h1 { margin: 0 0 8px; font-size: 1.8rem; }
+    .intro { margin: 0 0 24px; color: #536176; }
+    .card { background: white; border: 1px solid #dce4ef; border-radius: 16px; padding: 24px; margin: 16px 0; box-shadow: 0 5px 20px #14213d0b; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    label { display: block; font-weight: 650; font-size: .95rem; }
+    select, input { width: 100%; margin-top: 7px; padding: 11px 12px; border: 1px solid #c8d2e0; border-radius: 9px; background: white; color: inherit; font: inherit; }
+    button { margin-top: 20px; border: 0; border-radius: 10px; padding: 12px 20px; background: #1458d4; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+    button:hover { background: #1048ae; }
+    .result { border-left: 6px solid #667085; background: #f6f8fb; border-radius: 12px; padding: 18px; }
+    .result.positive { border-color: #168451; background: #effaf4; }
+    .result.negative { border-color: #bf3c3c; background: #fff4f3; }
+    .result h2 { margin: 0 0 10px; font-size: 1.45rem; }
+    .score { color: #344054; font-size: 1rem; }
+    .score strong { font-size: 1.6rem; color: #172033; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #e6ebf2; }
+    th { width: 38%; color: #46556b; font-weight: 600; }
+    .notice { color: #46556b; font-size: .92rem; line-height: 1.65; }
+    .preview { margin-top: 16px; padding: 14px; border-radius: 10px; background: #eaf2ff; color: #183d72; line-height: 1.55; }
+    .hidden { display: none; }
+    @media (max-width: 600px) { body { padding: 20px 12px; } .card { padding: 18px; } .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>귀화 기록 분류 데모</h1>
+  <p class="intro">입력한 자료를 바탕으로 2021년 조사기록상 귀화 여부를 분류합니다.</p>
+
+  <section class="card">
+    <form id="predict-form">
+      <div class="grid">
+        <label>성별
+          <select id="gender"><option value="1">남성</option><option value="2">여성</option></select>
+        </label>
+        <label>만 나이
+          <input id="age" type="number" min="18" max="95" value="35" required>
+        </label>
+        <label>최종학력
+          <select id="edu">
+            <option value="1">받지 않았음(미취학 포함)</option>
+            <option value="2">초등학교</option><option value="3">중학교</option>
+            <option value="4">고등학교</option><option value="5">대학교(4년제 미만)</option>
+            <option value="6">대학교(4년제 이상)</option><option value="7">대학원 이상</option>
+          </select>
+        </label>
+        <label>혼인 상태
+          <select id="marital">
+            <option value="1">미혼</option><option value="2">배우자 있음</option>
+            <option value="3">배우자 사망</option><option value="4">이혼·별거</option>
+          </select>
+        </label>
+        <label>출생 시 국적
+          <select id="birth"><option value="1">대한민국</option><option value="2">외국</option></select>
+        </label>
+        <label>최초 입국 연도
+          <input id="entry" type="number" min="1937" max="2021" value="2015" required>
+        </label>
+      </div>
+      <button type="submit">결과 확인</button>
+    </form>
+  </section>
+
+  <section id="analysis" class="card hidden" aria-live="polite">
+    <h2>분석 결과</h2>
+    <div id="result" class="result">
+      <h2 id="classification"></h2>
+      <div class="score">귀화한 사람(조사기록 1) 분류 점수: <strong id="score"></strong></div>
+    </div>
+    <h3>입력한 분석 자료</h3>
+    <table><tbody id="summary"></tbody></table>
+    <div id="message" class="preview"></div>
+  </section>
+
+  <section class="card notice">
+    <h2>주의사항</h2>
+    <p>이 결과는 2021년 조사 당시의 nat_acq_yn 기록 분류이며, 앞으로 귀화할지 또는 귀화할 확률을 예측하는 결과가 아닙니다.</p>
+    <p>분류 점수는 미래 귀화 확률로 검증되지 않았습니다. 코드북에서 nat_acq_yn=0의 정확한 의미를 확인한 뒤 해석해야 합니다.</p>
+    <p>실제 지원이나 안내 대상은 이 결과만으로 정하지 말고, 당사자의 의사와 현재 상황을 담당자가 확인해야 합니다.</p>
+  </section>
+</main>
+<script src="./model.js"></script>
+</body>
+</html>
