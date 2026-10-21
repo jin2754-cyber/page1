@@ -2,10 +2,7 @@
   "use strict";
   const model = window.NaturalizationModel;
   const form = document.getElementById("predict-form");
-  const birthType = document.getElementById("birthType");
-  const countryField = document.getElementById("birth-code-field");
   const birthCode = document.getElementById("birthCode");
-  const scoreRow = document.getElementById("score-row");
 
   const labels = {
     gender: { 1: "\uB0A8\uC131", 2: "\uC5EC\uC131" },
@@ -28,20 +25,10 @@
     birthCode.appendChild(option);
   }
 
-  function syncBirthType() {
-    const foreign = birthType.value === "foreign";
-    countryField.classList.toggle("hidden", !foreign);
-    birthCode.required = foreign;
-    if (!foreign) birthCode.value = "";
-  }
-
   function showRows(rows) {
     document.getElementById("summary").innerHTML =
       rows.map(([name, value]) => "<tr><th>" + name + "</th><td>" + value + "</td></tr>").join("");
   }
-
-  birthType.addEventListener("change", syncBirthType);
-  syncBirthType();
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -50,54 +37,38 @@
       age: Number(document.getElementById("age").value),
       education: Number(document.getElementById("edu").value),
       marital: Number(document.getElementById("marital").value),
+      birthCode: Number(birthCode.value),
       entry: Number(document.getElementById("entry").value)
     };
+
     if (values.age < 18 || values.age > 95 || values.entry < 1937 || values.entry > 2021) {
       window.alert("\uC785\uB825\uAC12\uC774 \uD559\uC2B5\uC790\uB8CC \uBC94\uC704\uB97C \uBC97\uC5B4\uB0AC\uC2B5\uB2C8\uB2E4.");
       return;
     }
-
-    document.getElementById("analysis").classList.remove("hidden");
-    const box = document.getElementById("result");
-    const classification = document.getElementById("classification");
-    const message = document.getElementById("message");
-    const rows = [
-      ["\uC131\uBCC4", labels.gender[values.gender]],
-      ["\uB9CC \uB098\uC774", values.age + "\uC138"],
-      ["\uCD5C\uC885\uD559\uB825", labels.education[values.education]],
-      ["\uD63C\uC778 \uC0C1\uD0DC", labels.marital[values.marital]],
-      ["\uCD5C\uCD08 \uC785\uAD6D \uC5F0\uB3C4", values.entry + "\uB144"]
-    ];
-
-    if (birthType.value === "korea") {
-      box.className = "result neutral";
-      classification.textContent = "\uC774 \uC785\uB825\uC740 \uBAA8\uB378\uC758 \uBD84\uB958 \uB300\uC0C1\uC774 \uC544\uB2D9\uB2C8\uB2E4";
-      scoreRow.classList.add("hidden");
-      rows.splice(4, 0, ["\uCD9C\uC0DD \uC2DC \uAD6D\uC801", "\uB300\uD55C\uBBFC\uAD6D"]);
-      rows.splice(5, 0, ["\uCD9C\uC0DD \uC2DC \uAD6D\uC801 \uAD6D\uAC00 \uCF54\uB4DC", "\uD574\uB2F9 \uC5C6\uC74C"]);
-      showRows(rows);
-      message.textContent = "\uCD9C\uC0DD \uC2DC \uB300\uD55C\uBBFC\uAD6D \uAD6D\uC801\uC778 \uACBD\uC6B0 \uC774 \uBAA8\uB378\uC758 \uD559\uC2B5 \uB300\uC0C1\uC5D0 \uD3EC\uD568\uB418\uC9C0 \uC54A\uC544 \uBD84\uB958\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.";
-      document.getElementById("analysis").scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-
-    values.birthCode = Number(birthCode.value);
     if (!model.countryCodes.includes(values.birthCode)) {
       window.alert("\uC6D0\uC790\uB8CC\uC5D0 \uC788\uB294 \uCD9C\uC0DD \uAD6D\uC801 \uCF54\uB4DC\uB97C \uC120\uD0DD\uD574 \uC8FC\uC138\uC694.");
       return;
     }
 
     const prediction = model.predict(values);
+    document.getElementById("analysis").classList.remove("hidden");
+    const box = document.getElementById("result");
     box.className = "result " + (prediction.predicted === 1 ? "positive" : "negative");
-    classification.textContent = prediction.predicted === 1
+    document.getElementById("classification").textContent = prediction.predicted === 1
       ? "\uAD6D\uC801\uC744 \uCDE8\uB4DD\uD55C \uC0AC\uB78C\uC73C\uB85C \uBD84\uB958\uB418\uC5C8\uC2B5\uB2C8\uB2E4"
       : "\uAD6D\uC801\uC744 \uCDE8\uB4DD\uD558\uC9C0 \uC54A\uC740 \uC0AC\uB78C\uC73C\uB85C \uBD84\uB958\uB418\uC5C8\uC2B5\uB2C8\uB2E4";
-    scoreRow.classList.remove("hidden");
     document.getElementById("score").textContent = (prediction.score * 100).toFixed(1) + "%";
-    rows.splice(4, 0, ["\uCD9C\uC0DD \uC2DC \uAD6D\uC801", "\uC678\uAD6D"]);
-    rows.splice(5, 0, ["\uCD9C\uC0DD \uC2DC \uAD6D\uC801 \uAD6D\uAC00 \uCF54\uB4DC", String(values.birthCode)]);
-    showRows(rows);
-    message.textContent = prediction.predicted === 1
+
+    showRows([
+      ["\uC131\uBCC4", labels.gender[values.gender]],
+      ["\uB9CC \uB098\uC774", values.age + "\uC138"],
+      ["\uCD5C\uC885\uD559\uB825", labels.education[values.education]],
+      ["\uD63C\uC778 \uC0C1\uD0DC", labels.marital[values.marital]],
+      ["\uCD9C\uC0DD \uC2DC \uAD6D\uC801 \uAD6D\uAC00 \uCF54\uB4DC", String(values.birthCode)],
+      ["\uCD5C\uCD08 \uC785\uAD6D \uC5F0\uB3C4", values.entry + "\uB144"]
+    ]);
+
+    document.getElementById("message").textContent = prediction.predicted === 1
       ? "\uC548\uB0B4\uBB38 \uBBF8\uB9AC\uBCF4\uAE30: \uAD6D\uC801 \uAD00\uB828 \uC0C1\uB2F4\uC774\uB098 \uC808\uCC28 \uC815\uBCF4\uAC00 \uD544\uC694\uD558\uC2E0\uAC00\uC694? \uC774 \uD654\uBA74\uC740 \uC2E4\uC81C\uB85C \uBA54\uC2DC\uC9C0\uB97C \uBC1C\uC1A1\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
       : "\uC774 \uBD84\uB958 \uACB0\uACFC\uB9CC\uC73C\uB85C \uC9C0\uC6D0\uC774 \uD544\uC694 \uC5C6\uB2E4\uACE0 \uD310\uB2E8\uD558\uC9C0 \uB9C8\uC138\uC694.";
     document.getElementById("analysis").scrollIntoView({ behavior: "smooth", block: "start" });

@@ -20,7 +20,6 @@
     .result { border-left: 6px solid #667085; background: #f6f8fb; border-radius: 12px; padding: 18px; }
     .result.positive { border-color: #168451; background: #effaf4; }
     .result.negative { border-color: #bf3c3c; background: #fff4f3; }
-    .result.neutral { border-color: #c58a16; background: #fff9e9; }
     .result h2 { margin: 0 0 10px; font-size: 1.45rem; }
     .score { color: #344054; font-size: 1rem; }
     .score strong { font-size: 1.6rem; color: #172033; }
@@ -61,16 +60,11 @@
             <option value="3">배우자 사망</option><option value="4">이혼·별거</option>
           </select>
         </label>
-        <label>출생 시 국적
-          <select id="birthType" required>
+        <label>출생 시 국적 국가 코드
+          <select id="birthCode" required>
             <option value="" selected disabled>선택</option>
-            <option value="korea">대한민국</option>
-            <option value="foreign">외국</option>
           </select>
-        </label>
-        <label id="birth-code-field" class="hidden">출생 시 국적 국가 코드
-          <select id="birthCode"></select>
-          <small>원자료 국가 코드입니다. 제공된 코드북에는 국가명 대응표가 없어 숫자로 표시합니다.</small>
+          <small>원자료에서 사용된 국가 코드입니다. 제공된 코드북에는 국가명 대응표가 없어 숫자로 표시합니다.</small>
         </label>
         <label>최초 입국 연도
           <input id="entry" type="number" min="1937" max="2021" value="2015" required>
@@ -95,7 +89,6 @@
     <h2>주의사항</h2>
     <p>이 결과는 2021년 조사 당시의 nat_acq_yn 기록 분류이며, 앞으로 귀화할지 또는 귀화할 확률을 예측하는 결과가 아닙니다.</p>
     <p>분류 점수는 미래 귀화 확률로 검증되지 않았습니다. 코드북에서 nat_acq_yn=0의 정확한 의미를 확인한 뒤 해석해야 합니다.</p>
-    <p>출생 시 대한민국 국적인 경우 이 모델의 학습 대상이 아니므로 분류를 제공하지 않습니다. 외국 국적 입력에는 원자료의 birth_nat_code 국가 코드가 사용됩니다.</p>
     <p>실제 지원이나 안내 대상은 이 결과만으로 정하지 말고, 당사자의 의사와 현재 상황을 담당자가 확인해야 합니다.</p>
   </section>
 </main>

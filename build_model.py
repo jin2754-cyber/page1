@@ -20,11 +20,9 @@ def main():
     df = pd.read_csv(DATA_PATH, encoding="cp949")
     df.columns = df.columns.str.strip()
 
-    # Use focal respondents whose nationality at birth was foreign and whose country code is known.
-    model_df = df.loc[
-        (df["rel_imm"] == 1) & (df["birth_nat_1"] == 2),
-        FEATURES + [TARGET],
-    ].dropna().copy()
+    # Use focal respondents with a recorded birth-country code and known target.
+    # A missing code is excluded rather than treated as a country category.
+    model_df = df.loc[df["rel_imm"] == 1, FEATURES + [TARGET]].dropna().copy()
 
     for column in CATEGORICAL:
         model_df[column] = model_df[column].astype(int)
